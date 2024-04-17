@@ -14,7 +14,7 @@ const MainManager = (function () {
 
       ProcessManager.setup();
 
-      noLoop();
+      // noLoop();
     },
 
     draw(dt) {
