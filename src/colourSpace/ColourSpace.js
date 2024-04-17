@@ -38,7 +38,7 @@ class OkLab {
   }
 
   get p5Color() {
-    let out = OkLab.LabtosRGB(new OkLab(this.l, this.a, this.b));
+    let out = OkLab.OkLabtosRGB(this.copy());
     out.clamp();
     return out.p5Color;
   }
@@ -51,6 +51,16 @@ class OkLab {
 
   copy() {
     return new OkLab(this.l, this.a, this.b);
+  }
+
+  rgbClamp() {
+    let rgb = OkLab.OkLabtosRGB(this.copy());
+    rgb.clamp();
+    console.log(rgb);
+    let lab = OkLab.sRGBtoOkLab(rgb.copy());
+    this.l = lab.l;
+    this.a = lab.a;
+    this.b = lab.b;
   }
 
   static #LinearRGBtoXYZ = new Matrix([
@@ -91,6 +101,7 @@ class OkLab {
         val.mat[0][i] = Math.pow((val.mat[0][i] + 0.055 / 1.055), 2.4);
       }
     }
+    // val.pow(2.2);
 
     // to CIE XYZ
     let temp = val.copy();
@@ -113,7 +124,7 @@ class OkLab {
     return new OkLab(val.mat[0][0], val.mat[0][1], val.mat[0][2]);
   }
 
-  static LabtosRGB(lab) {
+  static OkLabtosRGB(lab) {
     let val = new Matrix([[lab.l, lab.a, lab.b]]);
 
     // to LMS
@@ -147,6 +158,7 @@ class OkLab {
         val.mat[0][i] = (1.055 * val.mat[0][i]) - 0.055;
       }
     }
+    // val.nroot(2.2);
 
     return new sRGB(val.mat[0][0], val.mat[0][1], val.mat[0][2]);
   }
