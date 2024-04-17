@@ -27,7 +27,7 @@ const ProcessManager = (function () {
 
   const debugStates = true;
 
-  const bgColsRGB = new sRGB(28 / 255, 28 / 255, 28 / 255)
+  const bgColsRGB = new sRGB(28 / 255, 28 / 255, 28 / 255);
 
   let checkerCol1, checkerCol2;
 
