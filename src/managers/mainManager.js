@@ -13,8 +13,6 @@ const MainManager = (function () {
       this.canvas.position(0, 0);
 
       ProcessManager.setup();
-
-      // noLoop();
     },
 
     draw(dt) {

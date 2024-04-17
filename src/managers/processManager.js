@@ -16,16 +16,6 @@ const ProcessManager = (function () {
 
     },
 
-    generatePalette() {
-      // console.log('Button pressed');
-
-      console.log('Start Color');
-      console.log(DOMManager.startColorPicker.color());
-
-      console.log('End Color');
-      console.log(DOMManager.endColorPicker.color());
-    },
-
     draw(dt) {
       switch (state) {
         default:
