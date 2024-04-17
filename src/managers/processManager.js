@@ -5,6 +5,35 @@ const ProcessManager = (function () {
 
   const debugStates = true;
 
+
+  const checkerCol1 = new sRGB(28 / 255, 28 / 255, 28 / 255);
+  let temp = checkerCol1.copy();
+  temp.scalar(1 / 2);
+
+  const checkerCol2 = temp.copy();
+
+  function drawChecker(size) {
+    noStroke();
+    for (let i = 0; i < Math.ceil(width / size); i++) {
+      for (let j = 0; j < Math.ceil(height / size); j++) {
+        if (j % 2 === 0) {
+          if (i % 2 === 0) {
+            fill(checkerCol1.p5Color);
+          } else {
+            fill(checkerCol2.p5Color);
+          }
+        } else {
+          if (i % 2 === 0) {
+            fill(checkerCol2.p5Color);
+          } else {
+            fill(checkerCol1.p5Color);
+          }
+        }
+        rect(i * size, j * size, size, size);
+      }
+    }
+  }
+
   return {
     changeState(s) {
       state = s;
@@ -17,11 +46,8 @@ const ProcessManager = (function () {
     },
 
     draw(dt) {
-      switch (state) {
-        default:
-          // do nothing
-          break;
-      }
+      background(0);
+      drawChecker(10);
     }
   }
 })()
