@@ -146,4 +146,38 @@ class Matrix {
 
     return NaN;
   }
+
+  pow(p) {
+    for (let i = 0; i < this.cols; i++) {
+      for (let j = 0 ; j < this.rows; j++) {
+        this.mat[i][j] = Math.pow(this.mat[i][j], p);
+      }
+    }
+  }
+
+  cbrt() {
+    for (let i = 0; i < this.cols; i++) {
+      for (let j = 0 ; j < this.rows; j++) {
+        this.mat[i][j] = Math.cbrt(this.mat[i][j]);
+      }
+    }
+  }
+
+  nroot(n) {
+    const exp = 1. / n;
+    for (let i = 0; i < this.cols; i++) {
+      for (let j = 0 ; j < this.rows; j++) {
+        // newMat.mat[i][j] = Math.pow(this.mat[i][j], p);
+        if (n % 1 === 0) {
+          this.mat[i][j] = Math.pow(this.mat[i][j], exp);
+        } else {
+          let absroot = Math.pow(Math.abs(this.mat[i][j]), exp);
+
+          if (this.mat[i][j] < 0.) absroot *= -1;
+
+          this.mat[i][j] = absroot;
+        }
+      }
+    }
+  }
 }
