@@ -56,7 +56,7 @@ class OkLab {
   rgbClamp() {
     let rgb = OkLab.OkLabtosRGB(this.copy());
     rgb.clamp();
-    console.log(rgb);
+    // console.log(rgb);
     let lab = OkLab.sRGBtoOkLab(rgb.copy());
     this.l = lab.l;
     this.a = lab.a;
@@ -68,26 +68,26 @@ class OkLab {
     [0.3575761, 0.7151522, 0.1191920],
     [0.1804375, 0.0721750, 0.9503041]
   ]);
-  static #XYZtoLinearRGB = this.#LinearRGBtoXYZ.copy();
+  static #XYZtoLinearRGB = OkLab.#LinearRGBtoXYZ.copy();
 
   static #XYZtoLinearLMS = new Matrix([
     [0.8189330101, 0.0329845436, 0.0482003018],
     [0.3618667424, 0.9293118715, 0.2643662691],
     [-0.1288597137, 0.0361456387, 0.6338517070]
   ]);
-  static #LinearLMStoXYZ = this.#XYZtoLinearLMS.copy();
+  static #LinearLMStoXYZ = OkLab.#XYZtoLinearLMS.copy();
 
   static #LMStoLab = new Matrix([
     [0.2104542553, 1.9779984951, 0.0259040371],
     [0.7936177850, -2.4285922050, 0.7827717662],
     [-0.0040720468, 0.4505937099, -0.8086757660]
   ]);
-  static #LabtoLMS = this.#LMStoLab.copy();
+  static #LabtoLMS = OkLab.#LMStoLab.copy();
 
   static initialise() {
-    this.#XYZtoLinearRGB.invert3x3();
-    this.#LinearLMStoXYZ.invert3x3();
-    this.#LabtoLMS.invert3x3();
+    OkLab.#XYZtoLinearRGB.invert3x3();
+    OkLab.#LinearLMStoXYZ.invert3x3();
+    OkLab.#LabtoLMS.invert3x3();
   }
 
   static sRGBtoOkLab(srgb) {

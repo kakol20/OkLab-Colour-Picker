@@ -28,12 +28,8 @@ const ProcessManager = (function () {
   const debugStates = true;
 
   const bgColsRGB = new sRGB(28 / 255, 28 / 255, 28 / 255)
-  const checkerCol1 = OkLab.sRGBtoOkLab(bgColsRGB.copy());
-  let temp = checkerCol1.copy();
-  temp.scalar(1 / 2);
-  // temp.rgbClamp();
 
-  const checkerCol2 = temp.copy();
+  let checkerCol1, checkerCol2;
 
   return {
     changeState(s) {
@@ -45,9 +41,16 @@ const ProcessManager = (function () {
     setup() {
       OkLab.initialise();
 
+      checkerCol1 = OkLab.sRGBtoOkLab(bgColsRGB.copy());
+      let temp = checkerCol1.copy();
+      temp.scalar(1 / 2);
+      temp.rgbClamp();
+
+      checkerCol2 = temp.copy();
+
       // console.log(OkLab.OkLabtosRGB(temp));
-      console.log(checkerCol1.p5Color);
-      console.log(checkerCol2.p5Color);
+      console.log(checkerCol1);
+      console.log(checkerCol2);
     },
 
     draw(dt) {
