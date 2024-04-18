@@ -1,6 +1,7 @@
 const ProcessManager = (function () {
   function drawChecker(size) {
     noStroke();
+    rectMode(CORNER);
     for (let i = 0; i < Math.ceil(width / size); i++) {
       for (let j = 0; j < Math.ceil(height / size); j++) {
         if (j % 2 === 0) {
@@ -40,6 +41,7 @@ const ProcessManager = (function () {
 
     setup() {
       OkLab.initialise();
+      ColourPicker.setup();
 
       checkerCol1 = OkLab.sRGBtoOkLab(bgColsRGB.copy());
       let temp = checkerCol1.copy();
@@ -49,13 +51,25 @@ const ProcessManager = (function () {
       checkerCol2 = temp.copy();
 
       // console.log(OkLab.OkLabtosRGB(temp));
-      console.log(checkerCol1);
-      console.log(checkerCol2);
+      // console.log(checkerCol1);
+      // console.log(checkerCol2);
     },
 
     draw(dt) {
       background(checkerCol1.p5Color);
       drawChecker(10);
+
+      ColourPicker.draw();
+    },
+
+    touchStarted() {
+      
+    },
+    touchMoved() {
+
+    },
+    touchEnded() {
+      
     }
   }
 })()

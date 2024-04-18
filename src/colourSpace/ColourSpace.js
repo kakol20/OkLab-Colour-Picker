@@ -8,6 +8,15 @@ class sRGB {
   get p5Color() {
     return color(this.red * 255, this.green * 255, this.blue * 255);
   }
+  
+  get isOutsideRGB() {
+    const max = 1;
+    const min = 0;
+
+    return this.red > max || this.red < min || 
+      this.green > max || this.green < min || 
+      this.blue > max || this.blue < min;
+  }
 
   clamp() {
     this.red = this.red > 1 ? 1 : this.red;
@@ -98,7 +107,7 @@ class OkLab {
       if (val.mat[0][i] <= 0.04045) {
         val.mat[0][i] /= 12.92;
       } else {
-        val.mat[0][i] = Math.pow((val.mat[0][i] + 0.055 / 1.055), 2.4);
+        val.mat[0][i] = Math.pow((val.mat[0][i] + 0.055) / 1.055, 2.4);
       }
     }
     // val.pow(2.2);
