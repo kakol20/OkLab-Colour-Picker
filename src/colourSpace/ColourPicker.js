@@ -285,6 +285,8 @@ const ColourPicker = (function () {
           sliderMax = 1;
           chosenColour.l = map(y, height - 70, 10, sliderMin, sliderMax);
         }
+
+        chosenColour.rgbClamp();
       }
     },
     touchMoved() {
@@ -300,6 +302,8 @@ const ColourPicker = (function () {
           } else {
             chosenColour.l = map(y, height - 70, 10, sliderMin, sliderMax);
           }
+
+          chosenColour.rgbClamp();
         }
       }
 
