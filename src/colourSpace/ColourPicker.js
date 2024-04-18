@@ -10,6 +10,8 @@ const ColourPicker = (function () {
   let touching = false;
   let touched = 'nothing';
 
+  let start = true;
+
   const box = (function () {
     return {
       chosen: {
@@ -89,11 +91,11 @@ const ColourPicker = (function () {
           }
 
           let srgb = OkLab.OkLabtosRGB(new OkLab(l, a, b));
-          // if (srgb.isOutsideRGB) {
-          //   pixels[index + 3] = 28;
-          // } else {
-          //   pixels[index + 3] = 255;
-          // }
+          if (srgb.isOutsideRGB) {
+            pixels[index + 3] = 128;
+          } else {
+            pixels[index + 3] = 255;
+          }
           srgb.clamp();
           pixels[index + 0] = srgb.red * 255;
           pixels[index + 1] = srgb.green * 255;
@@ -173,6 +175,7 @@ const ColourPicker = (function () {
 
   return {
     setup() {
+      start = true;
       loop();
       outlineCol = OkLab.sRGBtoOkLab(new sRGB(28 / 255, 28 / 255, 28 / 255));
       outlineCol.l *= 2;
@@ -182,7 +185,7 @@ const ColourPicker = (function () {
       box.size.w = slider.size.h;
       box.size.h = slider.size.h;
 
-      chosenColour = OkLab.sRGBtoOkLab(new sRGB(1, 0, 0));
+      chosenColour = OkLab.sRGBtoOkLab(new sRGB(0, 0, 1));
       // chosenColour.l = 0.5;
       chosenColour.rgbClamp();
       console.log(chosenColour);
@@ -219,6 +222,7 @@ const ColourPicker = (function () {
     },
 
     draw() {
+      start = false;
       if (slider.sliderMode === 'a') {
         slider.chosen = chosenColour.a;
         slider.chosenPos = map(chosenColour.a, sliderMin, sliderMax, height - 70, 10);
@@ -288,6 +292,26 @@ const ColourPicker = (function () {
 
         chosenColour.rgbClamp();
       }
+      else if (x >= 70 && x <= width - 10 && y >= 10 && y <= height - 70) {
+        touching = true;
+        console.log('Touch inside box');
+        touched = 'box';
+        x = Math.max(Math.min(x, width - 10), 10);
+        y = Math.max(Math.min(y, height - 70), 10);
+
+        if (slider.sliderMode === 'a') {
+          chosenColour.b = map(x, 70, width - 10, -0.32, 0.2);
+          chosenColour.l = map(y, height - 70, 10, 0, 1);
+        } else if (slider.sliderMode === 'b') {
+          chosenColour.a = map(x, 70, width - 10, -0.24, 0.28);
+          chosenColour.l = map(y, height - 70, 10, 0, 1);
+        } else {
+          chosenColour.a = map(x, 70, width - 10, -0.24, 0.28);
+          chosenColour.b = map(y, height - 70, 10, -0.32, 0.2);
+        }
+
+        chosenColour.rgbClamp();
+      }
     },
     touchMoved() {
       let x = mouseX;
@@ -301,6 +325,22 @@ const ColourPicker = (function () {
             chosenColour.b = map(y, height - 70, 10, sliderMin, sliderMax);
           } else {
             chosenColour.l = map(y, height - 70, 10, sliderMin, sliderMax);
+          }
+
+          chosenColour.rgbClamp();
+        } else if (touched === 'box') {
+          x = Math.max(Math.min(x, width - 10), 10);
+          y = Math.max(Math.min(y, height - 70), 10);
+
+          if (slider.sliderMode === 'a') {
+            chosenColour.b = map(x, 70, width - 10, -0.32, 0.2);
+            chosenColour.l = map(y, height - 70, 10, 0, 1);
+          } else if (slider.sliderMode === 'b') {
+            chosenColour.a = map(x, 70, width - 10, -0.24, 0.28);
+            chosenColour.l = map(y, height - 70, 10, 0, 1);
+          } else {
+            chosenColour.a = map(x, 70, width - 10, -0.24, 0.28);
+            chosenColour.b = map(y, height - 70, 10, -0.32, 0.2);
           }
 
           chosenColour.rgbClamp();
