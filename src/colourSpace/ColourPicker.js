@@ -10,6 +10,8 @@ const ColourPicker = (function () {
   let touching = false;
   let touched = 'nothing';
 
+  const referenceSize = 20;
+
   let start = true;
 
   const box = (function () {
@@ -19,10 +21,10 @@ const ColourPicker = (function () {
         y: 0,
       },
       size: {
-        w: 50, h: 50
+        w: referenceSize, h: referenceSize
       },
       pos: {
-        x: 70, y: 10
+        x: referenceSize + 20, y: 10
       },
 
       drawOther() {
@@ -108,7 +110,7 @@ const ColourPicker = (function () {
   const slider = (function () {
     return {
       size: {
-        w: 50, h: 50
+        w: referenceSize, h: referenceSize
       },
       pos: {
         x: 10, y: 10
@@ -128,13 +130,13 @@ const ColourPicker = (function () {
         ellipseMode(CENTER);
         fill(chosenColour.p5Color);
         stroke(outlineCol.p5Color);
-        circle(35, this.chosenPos, 15);
+        circle(10 + (referenceSize / 2), this.chosenPos, 15);
       },
 
       draw(x, y) {
         // draw slider
-        if (x >= 10 && x < 60 && y >= 10 && y < height - 70) {
-          let yT = map(y, height - 70, 10, 0, 1);
+        if (x >= 10 && x < (referenceSize + 10) && y >= 10 && y < height - (referenceSize + 20)) {
+          let yT = map(y, height - (referenceSize + 20), 10, 0, 1);
 
           let t = 0;
           if (this.sliderMode === 'a') {
@@ -180,12 +182,12 @@ const ColourPicker = (function () {
       outlineCol = OkLab.sRGBtoOkLab(new sRGB(28 / 255, 28 / 255, 28 / 255));
       outlineCol.l *= 2;
 
-      slider.size.h = height - 80;
+      slider.size.h = height - (referenceSize + 30);
 
       box.size.w = slider.size.h;
       box.size.h = slider.size.h;
 
-      chosenColour = OkLab.sRGBtoOkLab(new sRGB(1, 1, 0));
+      chosenColour = new OkLab(0.5, 0, 0);
       // chosenColour.l = 0.5;
       chosenColour.rgbClamp();
       console.log(chosenColour);
@@ -205,16 +207,16 @@ const ColourPicker = (function () {
         sliderMin = -0.32;
         sliderMax = 0.2;
 
-        chosenColour.b = map(y, height - 70, 10, sliderMin, sliderMax);
+        chosenColour.b = map(y, height - (referenceSize + 20), 10, sliderMin, sliderMax);
 
         slider.chosen = chosenColour.b;
-        slider.chosenPos = map(chosenColour.b, sliderMin, sliderMax, height - 70, 10);
+        slider.chosenPos = map(chosenColour.b, sliderMin, sliderMax, height - (referenceSize + 20), 10);
       } else {
         sliderMin = 0;
         sliderMax = 1;
 
         slider.chosen = chosenColour.l;
-        slider.chosenPos = map(chosenColour.l, sliderMin, sliderMax, height - 70, 10);
+        slider.chosenPos = map(chosenColour.l, sliderMin, sliderMax, height - (referenceSize + 20), 10);
 
         box.chosen.x = chosenColour.a;
         box.chosen.y = chosenColour.b;
@@ -225,19 +227,19 @@ const ColourPicker = (function () {
       start = false;
       if (slider.sliderMode === 'a') {
         slider.chosen = chosenColour.a;
-        slider.chosenPos = map(chosenColour.a, sliderMin, sliderMax, height - 70, 10);
+        slider.chosenPos = map(chosenColour.a, sliderMin, sliderMax, height - (referenceSize + 20), 10);
 
         box.chosen.x = chosenColour.b;
         box.chosen.y = chosenColour.l;
       } else if (slider.sliderMode === 'b') {
         slider.chosen = chosenColour.b;
-        slider.chosenPos = map(chosenColour.b, sliderMin, sliderMax, height - 70, 10);
+        slider.chosenPos = map(chosenColour.b, sliderMin, sliderMax, height - (referenceSize + 20), 10);
 
         box.chosen.x = chosenColour.a;
         box.chosen.y = chosenColour.l;
       } else {
         slider.chosen = chosenColour.l;
-        slider.chosenPos = map(chosenColour.l, sliderMin, sliderMax, height - 70, 10);
+        slider.chosenPos = map(chosenColour.l, sliderMin, sliderMax, height - (referenceSize + 20), 10);
 
         box.chosen.x = chosenColour.a;
         box.chosen.y = chosenColour.b;
@@ -262,52 +264,52 @@ const ColourPicker = (function () {
       ellipseMode(CORNER);
       stroke(outlineCol.p5Color)
       fill(chosenColour.p5Color);
-      circle(10, height - 60, 50);
+      circle(10, height - (referenceSize + 10), referenceSize);
     },
 
     touchStarted() {
       let x = mouseX;
       let y = mouseY;
 
-      if (x >= 10 && x < 60 && y >= 10 && y <= height - 70) {
+      if (x >= 10 && x < (referenceSize + 10) && y >= 10 && y <= height - (referenceSize + 20)) {
         touching = true;
         console.log('Touch inside slider');
         touched = 'slider';
 
-        y = Math.max(Math.min(y, height - 70), 10);
+        y = Math.max(Math.min(y, height - (referenceSize + 20)), 10);
 
         if (slider.sliderMode === 'a') {
           sliderMin = -0.24;
           sliderMax = 0.28;
-          chosenColour.a = map(y, height - 70, 10, sliderMin, sliderMax);
+          chosenColour.a = map(y, height - (referenceSize + 20), 10, sliderMin, sliderMax);
         } else if (slider.sliderMode === 'b') {
           sliderMin = -0.32;
           sliderMax = 0.2;
-          chosenColour.b = map(y, height - 70, 10, sliderMin, sliderMax);
+          chosenColour.b = map(y, height - (referenceSize + 20), 10, sliderMin, sliderMax);
         } else {
           sliderMin = 0;
           sliderMax = 1;
-          chosenColour.l = map(y, height - 70, 10, sliderMin, sliderMax);
+          chosenColour.l = map(y, height - (referenceSize + 20), 10, sliderMin, sliderMax);
         }
 
         chosenColour.rgbClamp();
       }
-      else if (x >= 70 && x <= width - 10 && y >= 10 && y <= height - 70) {
+      else if (x >= (referenceSize + 20) && x <= width - 10 && y >= 10 && y <= height - (referenceSize + 20)) {
         touching = true;
         console.log('Touch inside box');
         touched = 'box';
         x = Math.max(Math.min(x, width - 10), 10);
-        y = Math.max(Math.min(y, height - 70), 10);
+        y = Math.max(Math.min(y, height - (referenceSize + 20)), 10);
 
         if (slider.sliderMode === 'a') {
-          chosenColour.b = map(x, 70, width - 10, -0.32, 0.2);
-          chosenColour.l = map(y, height - 70, 10, 0, 1);
+          chosenColour.b = map(x, (referenceSize + 20), width - 10, -0.32, 0.2);
+          chosenColour.l = map(y, height - (referenceSize + 20), 10, 0, 1);
         } else if (slider.sliderMode === 'b') {
-          chosenColour.a = map(x, 70, width - 10, -0.24, 0.28);
-          chosenColour.l = map(y, height - 70, 10, 0, 1);
+          chosenColour.a = map(x, (referenceSize + 20), width - 10, -0.24, 0.28);
+          chosenColour.l = map(y, height - (referenceSize + 20), 10, 0, 1);
         } else {
-          chosenColour.a = map(x, 70, width - 10, -0.24, 0.28);
-          chosenColour.b = map(y, height - 70, 10, -0.32, 0.2);
+          chosenColour.a = map(x, (referenceSize + 20), width - 10, -0.24, 0.28);
+          chosenColour.b = map(y, height - (referenceSize + 20), 10, -0.32, 0.2);
         }
 
         chosenColour.rgbClamp();
@@ -318,29 +320,29 @@ const ColourPicker = (function () {
       let y = mouseY;
       if (touching) {
         if (touched === 'slider') {
-          y = Math.max(Math.min(y, height - 70), 10);
+          y = Math.max(Math.min(y, height - (referenceSize + 20)), 10);
           if (slider.sliderMode === 'a') {
-            chosenColour.a = map(y, height - 70, 10, sliderMin, sliderMax);
+            chosenColour.a = map(y, height - (referenceSize + 20), 10, sliderMin, sliderMax);
           } else if (slider.sliderMode === 'b') {
-            chosenColour.b = map(y, height - 70, 10, sliderMin, sliderMax);
+            chosenColour.b = map(y, height - (referenceSize + 20), 10, sliderMin, sliderMax);
           } else {
-            chosenColour.l = map(y, height - 70, 10, sliderMin, sliderMax);
+            chosenColour.l = map(y, height - (referenceSize + 20), 10, sliderMin, sliderMax);
           }
 
           chosenColour.rgbClamp();
         } else if (touched === 'box') {
           x = Math.max(Math.min(x, width - 10), 10);
-          y = Math.max(Math.min(y, height - 70), 10);
+          y = Math.max(Math.min(y, height - (referenceSize + 20)), 10);
 
           if (slider.sliderMode === 'a') {
-            chosenColour.b = map(x, 70, width - 10, -0.32, 0.2);
-            chosenColour.l = map(y, height - 70, 10, 0, 1);
+            chosenColour.b = map(x, (referenceSize + 20), width - 10, -0.32, 0.2);
+            chosenColour.l = map(y, height - (referenceSize + 20), 10, 0, 1);
           } else if (slider.sliderMode === 'b') {
-            chosenColour.a = map(x, 70, width - 10, -0.24, 0.28);
-            chosenColour.l = map(y, height - 70, 10, 0, 1);
+            chosenColour.a = map(x, (referenceSize + 20), width - 10, -0.24, 0.28);
+            chosenColour.l = map(y, height - (referenceSize + 20), 10, 0, 1);
           } else {
-            chosenColour.a = map(x, 70, width - 10, -0.24, 0.28);
-            chosenColour.b = map(y, height - 70, 10, -0.32, 0.2);
+            chosenColour.a = map(x, (referenceSize + 20), width - 10, -0.24, 0.28);
+            chosenColour.b = map(y, height - (referenceSize + 20), 10, -0.32, 0.2);
           }
 
           chosenColour.rgbClamp();
