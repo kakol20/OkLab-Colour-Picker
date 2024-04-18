@@ -185,7 +185,7 @@ const ColourPicker = (function () {
       box.size.w = slider.size.h;
       box.size.h = slider.size.h;
 
-      chosenColour = OkLab.sRGBtoOkLab(new sRGB(0, 0, 1));
+      chosenColour = OkLab.sRGBtoOkLab(new sRGB(1, 1, 0));
       // chosenColour.l = 0.5;
       chosenColour.rgbClamp();
       console.log(chosenColour);

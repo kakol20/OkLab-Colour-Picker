@@ -98,7 +98,15 @@ class OkLab {
   ]);
   static #LabtoLMS = OkLab.#LMStoLab.copy();
 
+  static #LinearRGBtoLinearLMS = OkLab.#XYZtoLinearLMS.copy();
+  static #LinearLMStoLinearRGB = OkLab.#LinearRGBtoLinearLMS.copy();
+
   static initialise() {
+    // XYZtoLinearLMS * (LinearRGBtoXYZ * lrgb)
+    OkLab.#LinearRGBtoLinearLMS.mult(OkLab.#LinearRGBtoXYZ);
+    OkLab.#LinearLMStoLinearRGB = OkLab.#LinearRGBtoLinearLMS.copy();
+    OkLab.#LinearLMStoLinearRGB.invert3x3();
+
     OkLab.#XYZtoLinearRGB.invert3x3();
     OkLab.#LinearLMStoXYZ.invert3x3();
     OkLab.#LabtoLMS.invert3x3();
@@ -117,14 +125,19 @@ class OkLab {
     // }
     val.pow(2.2);
 
-    // to CIE XYZ
-    let temp = val.copy();
-    val = this.#LinearRGBtoXYZ.copy();
-    val.mult(temp);
+    // // to CIE XYZ
+    // let temp = val.copy();
+    // val = this.#LinearRGBtoXYZ.copy();
+    // val.mult(temp);
+
+    // // to Linear LMS
+    // temp = val.copy();
+    // val = this.#XYZtoLinearLMS.copy();
+    // val.mult(temp);
 
     // to Linear LMS
-    temp = val.copy();
-    val = this.#XYZtoLinearLMS.copy();
+    let temp = val.copy();
+    val = this.#LinearRGBtoLinearLMS.copy();
     val.mult(temp);
 
     // to LMS
@@ -149,14 +162,19 @@ class OkLab {
     // to Linear LMS
     val.pow(3);
 
-    // to CIE XYZ
-    temp = val.copy();
-    val = this.#LinearLMStoXYZ.copy();
-    val.mult(temp);
+    // // to CIE XYZ
+    // temp = val.copy();
+    // val = this.#LinearLMStoXYZ.copy();
+    // val.mult(temp);
+
+    // // to Linear RGB
+    // temp = val.copy();
+    // val = this.#XYZtoLinearRGB.copy();
+    // val.mult(temp);
 
     // to Linear RGB
     temp = val.copy();
-    val = this.#XYZtoLinearRGB.copy();
+    val = this.#LinearLMStoLinearRGB.copy();
     val.mult(temp);
 
     // to sRGB
