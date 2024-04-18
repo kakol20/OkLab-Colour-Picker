@@ -108,14 +108,14 @@ class OkLab {
     let val = new Matrix([[srgb.red, srgb.green, srgb.blue]]);
 
     // to Linear RGB
-    for (let i = 0; i < 3; i++) {
-      if (val.mat[0][i] <= 0.04045) {
-        val.mat[0][i] /= 12.92;
-      } else {
-        val.mat[0][i] = Math.pow((val.mat[0][i] + 0.055) / 1.055, 2.4);
-      }
-    }
-    // val.pow(2.2);
+    // for (let i = 0; i < 3; i++) {
+    //   if (val.mat[0][i] <= 0.04045) {
+    //     val.mat[0][i] /= 12.92;
+    //   } else {
+    //     val.mat[0][i] = Math.pow((val.mat[0][i] + 0.055) / 1.055, 2.4);
+    //   }
+    // }
+    val.pow(2.2);
 
     // to CIE XYZ
     let temp = val.copy();
@@ -160,19 +160,19 @@ class OkLab {
     val.mult(temp);
 
     // to sRGB
-    const exp = 1. / 2.4;
-    for (let i = 0; i < 3; i++) {
-      if (val.mat[0][i] <= 0.0031308) {
-        val.mat[0][i] *= 12.92;
-      } else {
-        let absroot = Math.pow(Math.abs(val.mat[0][i]), exp);
-        if (val.mat[0][i] < 0.) absroot *= -1;
-        val.mat[0][i] = absroot;
+    // const exp = 1. / 2.4;
+    // for (let i = 0; i < 3; i++) {
+    //   if (val.mat[0][i] <= 0.0031308) {
+    //     val.mat[0][i] *= 12.92;
+    //   } else {
+    //     let absroot = Math.pow(Math.abs(val.mat[0][i]), exp);
+    //     if (val.mat[0][i] < 0.) absroot *= -1;
+    //     val.mat[0][i] = absroot;
 
-        val.mat[0][i] = (1.055 * val.mat[0][i]) - 0.055;
-      }
-    }
-    // val.nroot(2.2);
+    //     val.mat[0][i] = (1.055 * val.mat[0][i]) - 0.055;
+    //   }
+    // }
+    val.nroot(2.2);
 
     return new sRGB(val.mat[0][0], val.mat[0][1], val.mat[0][2]);
   }
