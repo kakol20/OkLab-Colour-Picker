@@ -1,1 +1,2 @@
-function preload() { MainManager.preload() } function setup() { MainManager.setup() } function draw() { MainManager.draw(deltaTime / 1000.0) }
+// https://www.toptal.com/developers/javascript-minifier
+function preload(){MainManager.preload()}function setup(){MainManager.setup()}function draw(){MainManager.draw(deltaTime/1e3)}function touchStarted(){return MainManager.touchStarted(),!1}function touchMoved(){return MainManager.touchMoved(),!1}function touchEnded(){return MainManager.touchEnded(),!1}

@@ -9,7 +9,7 @@ const MainManager = (function () {
     setup() {
       pixelDensity(1);
 
-      const size = Math.min(800, windowWidth, windowHeight);
+      const size = Math.max(Math.min(800, windowWidth, windowHeight), 200);
 
       this.canvas = createCanvas(size, size);
       this.canvas.position(0, 0);
@@ -19,6 +19,16 @@ const MainManager = (function () {
 
     draw(dt) {
       ProcessManager.draw(dt);
+    },
+
+    touchStarted() {
+      ProcessManager.touchStarted();
+    },
+    touchMoved() {
+      ProcessManager.touchMoved();
+    },
+    touchEnded() {  
+      ProcessManager.touchEnded();
     }
   }
 })();
