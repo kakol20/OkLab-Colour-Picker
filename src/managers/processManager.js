@@ -63,13 +63,13 @@ const ProcessManager = (function () {
     },
 
     touchStarted() {
-      
+      ColourPicker.touchStarted();
     },
     touchMoved() {
-
+      ColourPicker.touchMoved();
     },
     touchEnded() {
-      
+      ColourPicker.touchEnded();
     }
   }
 })()

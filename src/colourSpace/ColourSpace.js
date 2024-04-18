@@ -52,6 +52,11 @@ class OkLab {
     return out.p5Color;
   }
 
+  get isOutsideRGB() {
+    let rgb = OkLab.OkLabtosRGB(this.copy());
+    return rgb.isOutsideRGB;
+  }
+
   scalar(s) {
     this.l *= s;
     this.a *= s;
