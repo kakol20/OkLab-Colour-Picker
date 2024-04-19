@@ -24,7 +24,7 @@ class Matrix {
 
     let newMat = Array(newCols * newRows);
     for (let i = 0; i < newCols; i++) {
-      for (let j = 0; j < newCols; j++) {
+      for (let j = 0; j < newRows; j++) {
         let total = 0;
         const newMatI = this.#getIndex(i, j, newCols);
 
@@ -140,8 +140,8 @@ class Matrix {
           const newMatI = this.#getIndex(i, j, 3);
 
           let detArr = [
-            this.mat[this.#getIndex(colMin, rowMin, 2)], this.mat[this.#getIndex(colMax, rowMin, 2)],
-            this.mat[this.#getIndex(colMin, rowMax, 2)], this.mat[this.#getIndex(colMax, rowMax, 2)]
+            this.mat[this.#getIndex(colMin, rowMin, 3)], this.mat[this.#getIndex(colMax, rowMin, 3)],
+            this.mat[this.#getIndex(colMin, rowMax, 3)], this.mat[this.#getIndex(colMax, rowMax, 3)]
           ];
 
           let detMat = new Matrix(detArr, 2, 2);
@@ -156,7 +156,7 @@ class Matrix {
 
   invert3x3() {
     if (this.cols === 3 && this.rows === 3) {
-      let adjoint = new Matrix(this.mat);
+      let adjoint = new Matrix(this.mat, 3, 3);
       adjoint.cofactor3x3();
       adjoint.transpose();
 
@@ -164,6 +164,7 @@ class Matrix {
 
       if (determinant === 0) return false;
 
+      // let scalar = tranpose.copy();
       adjoint.scalar(1 / determinant);
       this.mat = clone(adjoint.mat);
       return true;

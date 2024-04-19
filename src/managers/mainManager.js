@@ -9,7 +9,7 @@ const MainManager = (function () {
     setup() {
       pixelDensity(1);
 
-      const size = Math.max(Math.min(256, windowWidth, windowHeight), 200);
+      const size = Math.max(Math.min(400, windowWidth, windowHeight), 200);
       frameRate(24);
 
       this.canvas = createCanvas(size, size);
