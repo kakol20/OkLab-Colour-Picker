@@ -40,6 +40,7 @@ const ProcessManager = (function () {
     },
 
     setup() {
+      noLoop();
       OkLab.initialise();
       ColourPicker.setup();
 
