@@ -10,7 +10,7 @@ const ColourPicker = (function () {
   let touching = false;
   let touched = 'nothing';
 
-  const referenceSize = 20;
+  const referenceSize = 40;
 
   let start = true;
 

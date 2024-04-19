@@ -40,6 +40,30 @@ const ProcessManager = (function () {
     },
 
     setup() {
+      // ----- TEST -----
+      if (false) {
+        let mat = new Matrix([1, 2, 1, 0, 1, 0, 2, 3, 4], 3, 3);
+        console.log("mult mat", mat);
+
+        let invert = mat.copy();
+        invert.invert3x3();
+        console.log("inverted", invert);
+
+        let rhs = new Matrix([2, 5, 6, 7, 1, 8], 2, 3);
+        console.log("rhs", rhs);
+
+        let rhsMult = mat.copy();
+        rhsMult.mult(rhs);
+        console.log("rhs multiplied", rhsMult);
+
+        let rhsInvertMult = invert.copy();
+        rhsInvertMult.mult(rhsMult);
+        console.log("back multiplied", rhsInvertMult);
+      }
+
+      // ----- MAIN -----
+
+      noLoop();
       OkLab.initialise();
       ColourPicker.setup();
 
@@ -51,12 +75,12 @@ const ProcessManager = (function () {
       checkerCol2 = temp.copy();
 
       // console.log(OkLab.OkLabtosRGB(temp));
-      // console.log(checkerCol1);
-      // console.log(checkerCol2);
+      console.log('First Background Col', checkerCol1);
+      console.log('Second Background Col', checkerCol2);
     },
 
     draw(dt) {
-      background(checkerCol1.p5Color);
+      background(28);
       drawChecker(10);
 
       ColourPicker.draw();
