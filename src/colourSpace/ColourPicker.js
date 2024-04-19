@@ -12,7 +12,14 @@ const ColourPicker = (function () {
 
   const referenceSize = 40;
 
-  let start = true;
+  const aValue = {
+    min: -0.4,
+    max: 0.4
+  };
+  const bValue = {
+    min: -0.4,
+    max: 0.4
+  };
 
   const box = (function () {
     return {
@@ -55,14 +62,14 @@ const ColourPicker = (function () {
 
         let x, y;
         if (slider.sliderMode === 'a') {
-          x = map(this.chosen.x, -0.32, 0.2, min.x, max.x);
+          x = map(this.chosen.x, bValue.min, bValue.max, min.x, max.x);
           y = map(this.chosen.y, 0, 1, max.y, min.y);
         } else if (slider.sliderMode === 'b') {
-          x = map(this.chosen.x, -0.24, 0.28, min.x, max.x);
+          x = map(this.chosen.x, aValue.min, aValue.max, min.x, max.x);
           y = map(this.chosen.y, 0, 1, max.y, min.y);
         } else {
-          x = map(this.chosen.x, -0.24, 0.28, min.x, max.x);
-          y = map(this.chosen.y, -0.32, 0.2, max.y, min.y);
+          x = map(this.chosen.x, aValue.min, aValue.max, min.x, max.x);
+          y = map(this.chosen.y, bValue.min, bValue.max, max.y, min.y);
         }
         ellipseMode(CENTER);
         fill(chosenColour.p5Color);
@@ -78,23 +85,24 @@ const ColourPicker = (function () {
         if (slider.sliderMode === 'a') {
           a = slider.chosen;
 
-          b = map(x, this.min.x, this.max.x, -0.32, 0.2);
+          b = map(x, this.min.x, this.max.x, bValue.min, bValue.max);
           l = map(y, this.max.y, this.min.y, 0, 1);
         } else if (slider.sliderMode === 'b') {
           b = slider.chosen;
 
-          a = map(x, this.min.x, this.max.x, -0.24, 0.28);
+          a = map(x, this.min.x, this.max.x, aValue.min, aValue.max);
           l = map(y, this.max.y, this.min.y, 0, 1);
         } else {
           l = slider.chosen;
 
-          a = map(x, this.min.x, this.max.x, -0.24, 0.28);
-          b = map(y, this.max.y, this.min.y, -0.32, 0.2);
+          a = map(x, this.min.x, this.max.x, aValue.min, aValue.max);
+          b = map(y, this.max.y, this.min.y, bValue.min, bValue.max);
         }
 
         let fg = new OkLab(l, a, b);
-        let alpha = fg.isOutsideRGB ? 128 / 255 : 1;
         let bg = OkLab.sRGBtoOkLab(new sRGB(pixels[index + 0] / 255, pixels[index + 1] / 255, pixels[index + 2] / 255));
+
+        let alpha = fg.isOutsideRGB ? 0.5 : 1;
 
         // let srgb = OkLab.OkLabtosRGB(OkLab.alphaOver(fg, bg, alpha));
         let srgb = OkLab.OkLabtosRGB(OkLab.lerp(bg, fg, alpha));
@@ -167,8 +175,11 @@ const ColourPicker = (function () {
   })();
 
   return {
+    consoleLog() {
+      console.log('chosenColour', chosenColour);
+      console.log('chosenColour.isOutsideRGB', chosenColour.isOutsideRGB);
+    },
     setup() {
-      start = true;
       loop();
       outlineCol = OkLab.sRGBtoOkLab(new sRGB(28 / 255, 28 / 255, 28 / 255));
       outlineCol.l *= 2;
@@ -190,7 +201,9 @@ const ColourPicker = (function () {
       const black = new OkLab(0, 0, 0);
 
       chosenColour = OkLab.sRGBtoOkLab(new sRGB(0.5, 0.5, 0.5));
-      chosenColour.l = 0.5;
+      // chosenColour = new OkLab(0.5, 0, 0);
+      // chosenColour.l = 0.5;
+      chosenColour.rgbClamp();
 
       let srgb = OkLab.OkLabtosRGB(chosenColour);
 
@@ -227,7 +240,6 @@ const ColourPicker = (function () {
     },
 
     draw() {
-      start = false;
       if (slider.sliderMode === 'a') {
         slider.chosen = chosenColour.a;
         slider.chosenPos = map(chosenColour.a, sliderMin, sliderMax, height - (referenceSize + 20), 10);
@@ -286,12 +298,12 @@ const ColourPicker = (function () {
         y = Math.max(Math.min(y, height - (referenceSize + 20)), 10);
 
         if (slider.sliderMode === 'a') {
-          sliderMin = -0.24;
-          sliderMax = 0.28;
+          sliderMin = aValue.min;
+          sliderMax = aValue.max;
           chosenColour.a = map(y, height - (referenceSize + 20), 10, sliderMin, sliderMax);
         } else if (slider.sliderMode === 'b') {
-          sliderMin = -0.32;
-          sliderMax = 0.2;
+          sliderMin = bValue.min;
+          sliderMax = bValue.max;
           chosenColour.b = map(y, height - (referenceSize + 20), 10, sliderMin, sliderMax);
         } else {
           sliderMin = 0;
@@ -309,14 +321,14 @@ const ColourPicker = (function () {
         y = Math.max(Math.min(y, height - (referenceSize + 20)), 10);
 
         if (slider.sliderMode === 'a') {
-          chosenColour.b = map(x, (referenceSize + 20), width - 10, -0.32, 0.2);
+          chosenColour.b = map(x, (referenceSize + 20), width - 10, bValue.min, bValue.max);
           chosenColour.l = map(y, height - (referenceSize + 20), 10, 0, 1);
         } else if (slider.sliderMode === 'b') {
-          chosenColour.a = map(x, (referenceSize + 20), width - 10, -0.24, 0.28);
+          chosenColour.a = map(x, (referenceSize + 20), width - 10, aValue.min, aValue.max);
           chosenColour.l = map(y, height - (referenceSize + 20), 10, 0, 1);
         } else {
-          chosenColour.a = map(x, (referenceSize + 20), width - 10, -0.24, 0.28);
-          chosenColour.b = map(y, height - (referenceSize + 20), 10, -0.32, 0.2);
+          chosenColour.a = map(x, (referenceSize + 20), width - 10, aValue.min, aValue.max);
+          chosenColour.b = map(y, height - (referenceSize + 20), 10, bValue.min, bValue.max);
         }
 
         chosenColour.rgbClamp();
@@ -342,14 +354,14 @@ const ColourPicker = (function () {
           y = Math.max(Math.min(y, height - (referenceSize + 20)), 10);
 
           if (slider.sliderMode === 'a') {
-            chosenColour.b = map(x, (referenceSize + 20), width - 10, -0.32, 0.2);
+            chosenColour.b = map(x, (referenceSize + 20), width - 10, bValue.min, bValue.max);
             chosenColour.l = map(y, height - (referenceSize + 20), 10, 0, 1);
           } else if (slider.sliderMode === 'b') {
-            chosenColour.a = map(x, (referenceSize + 20), width - 10, -0.24, 0.28);
+            chosenColour.a = map(x, (referenceSize + 20), width - 10, aValue.min, aValue.max);
             chosenColour.l = map(y, height - (referenceSize + 20), 10, 0, 1);
           } else {
-            chosenColour.a = map(x, (referenceSize + 20), width - 10, -0.24, 0.28);
-            chosenColour.b = map(y, height - (referenceSize + 20), 10, -0.32, 0.2);
+            chosenColour.a = map(x, (referenceSize + 20), width - 10, aValue.min, aValue.max);
+            chosenColour.b = map(y, height - (referenceSize + 20), 10, bValue.min, bValue.max);
           }
 
           chosenColour.rgbClamp();

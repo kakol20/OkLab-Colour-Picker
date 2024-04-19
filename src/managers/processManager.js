@@ -75,8 +75,8 @@ const ProcessManager = (function () {
       checkerCol2 = temp.copy();
 
       // console.log(OkLab.OkLabtosRGB(temp));
-      console.log('First Background Col', checkerCol1);
-      console.log('Second Background Col', checkerCol2);
+      // console.log('First Background Col', checkerCol1);
+      // console.log('Second Background Col', checkerCol2);
     },
 
     draw(dt) {
