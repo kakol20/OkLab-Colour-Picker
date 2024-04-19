@@ -1,3 +1,7 @@
+function lerp(a, b, t) {
+  return ((b - a) * t) + a;
+}
+
 class sRGB {
   constructor(r = 0, g = 0, b = 0) {
     this.red = r;
@@ -10,22 +14,22 @@ class sRGB {
   }
 
   get isOutsideRGB() {
-    const max = 1;
+    const max = 255;
     const min = 0;
 
-    return this.red > max || this.red < min ||
-      this.green > max || this.green < min ||
-      this.blue > max || this.blue < min;
+    let red = Math.round(this.red * 255);
+    let green = Math.round(this.green * 255);
+    let blue = Math.round(this.blue * 255);
+
+    return red > max || red < min ||
+      green > max || green < min ||
+      blue > max || blue < min;
   }
 
   clamp() {
-    this.red = this.red > 1 ? 1 : this.red;
-    this.green = this.green > 1 ? 1 : this.green;
-    this.blue = this.blue > 1 ? 1 : this.blue;
-
-    this.red = this.red < 0 ? 0 : this.red;
-    this.green = this.green < 0 ? 0 : this.green;
-    this.blue = this.blue < 0 ? 0 : this.blue;
+    this.red = Math.max(Math.min(this.red, 1), 0);
+    this.green = Math.max(Math.min(this.green, 1), 0);
+    this.blue = Math.max(Math.min(this.blue, 1), 0);
   }
 
   scalar(s) {
@@ -57,6 +61,26 @@ class OkLab {
     return rgb.isOutsideRGB;
   }
 
+  static white = new OkLab(1, 0, 0);
+  static black = new OkLab(0, 0, 0);
+
+  static alphaOver(fg, bg, a) {
+    return new OkLab((fg.l * a) + (bg.l * (1 - a)), (fg.a * a) + (bg.a * (1 - a)), (fg.b * a) + (bg.b * (1 - a)))
+  }
+
+  static lerp(a, b, t) {
+    return new OkLab(lerp(a.l, b.l, t), lerp(a.a, b.a, t), lerp(a.b, b.b, t))
+  }
+
+  dynamicLightness(l) {
+    if (this.l > l) {
+      this.a = lerp()
+    } else {
+
+    }
+    this.l = l;
+  }
+
   scalar(s) {
     this.l *= s;
     this.a *= s;
@@ -71,7 +95,7 @@ class OkLab {
     let rgb = OkLab.OkLabtosRGB(this.copy());
     rgb.clamp();
     // console.log(rgb);
-    let lab = OkLab.sRGBtoOkLab(rgb.copy());
+    let lab = OkLab.sRGBtoOkLab(rgb);
     this.l = lab.l;
     this.a = lab.a;
     this.b = lab.b;

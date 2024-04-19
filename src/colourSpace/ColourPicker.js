@@ -27,6 +27,15 @@ const ColourPicker = (function () {
         x: referenceSize + 20, y: 10
       },
 
+      min: {
+        x: 0,
+        y: 0
+      },
+      max: {
+        x: 0,
+        y: 0,
+      },
+
       drawOther() {
         // draw outline
         rectMode(CORNER);
@@ -63,46 +72,36 @@ const ColourPicker = (function () {
 
       draw(x, y) {
         // draw colours
-        const min = {
-          x: this.pos.x,
-          y: this.pos.y
-        };
-        const max = {
-          x: min.x + this.size.w,
-          y: min.y + this.size.h,
+        const index = GetIndex(x, y);
+        let l, a, b;
+
+        if (slider.sliderMode === 'a') {
+          a = slider.chosen;
+
+          b = map(x, this.min.x, this.max.x, -0.32, 0.2);
+          l = map(y, this.max.y, this.min.y, 0, 1);
+        } else if (slider.sliderMode === 'b') {
+          b = slider.chosen;
+
+          a = map(x, this.min.x, this.max.x, -0.24, 0.28);
+          l = map(y, this.max.y, this.min.y, 0, 1);
+        } else {
+          l = slider.chosen;
+
+          a = map(x, this.min.x, this.max.x, -0.24, 0.28);
+          b = map(y, this.max.y, this.min.y, -0.32, 0.2);
         }
-        if (x >= min.x && x < max.x && y >= min.y && y < max.y) {
-          const index = GetIndex(x, y);
-          let l, a, b;
 
-          if (slider.sliderMode === 'a') {
-            a = slider.chosen;
+        let fg = new OkLab(l, a, b);
+        let alpha = fg.isOutsideRGB ? 128 / 255 : 1;
+        let bg = OkLab.sRGBtoOkLab(new sRGB(pixels[index + 0] / 255, pixels[index + 1] / 255, pixels[index + 2] / 255));
 
-            b = map(x, min.x, max.x, -0.32, 0.2);
-            l = map(y, max.y, min.y, 0, 1);
-          } else if (slider.sliderMode === 'b') {
-            b = slider.chosen;
-
-            a = map(x, min.x, max.x, -0.24, 0.28);
-            l = map(y, max.y, min.y, 0, 1);
-          } else {
-            l = slider.chosen;
-
-            a = map(x, min.x, max.x, -0.24, 0.28);
-            b = map(y, max.y, min.y, -0.32, 0.2);
-          }
-
-          let srgb = OkLab.OkLabtosRGB(new OkLab(l, a, b));
-          if (srgb.isOutsideRGB) {
-            pixels[index + 3] = 128;
-          } else {
-            pixels[index + 3] = 255;
-          }
-          srgb.clamp();
-          pixels[index + 0] = srgb.red * 255;
-          pixels[index + 1] = srgb.green * 255;
-          pixels[index + 2] = srgb.blue * 255;
-        }
+        // let srgb = OkLab.OkLabtosRGB(OkLab.alphaOver(fg, bg, alpha));
+        let srgb = OkLab.OkLabtosRGB(OkLab.lerp(bg, fg, alpha));
+        srgb.clamp();
+        pixels[index + 0] = srgb.red * 255;
+        pixels[index + 1] = srgb.green * 255;
+        pixels[index + 2] = srgb.blue * 255;
       }
     }
   })();
@@ -135,42 +134,34 @@ const ColourPicker = (function () {
 
       draw(x, y) {
         // draw slider
-        if (x >= 10 && x < (referenceSize + 10) && y >= 10 && y < height - (referenceSize + 20)) {
-          let yT = map(y, height - (referenceSize + 20), 10, 0, 1);
+        let yT = map(y, height - (referenceSize + 20), 10, 0, 1);
 
-          let t = 0;
-          if (this.sliderMode === 'a') {
-            t = chosenColour.a;
-          } else if (this.sliderMode === 'b') {
-            t = chosenColour.b;
-          } else {
-            t = chosenColour.l;
-          }
-          t = map(yT, 0, 1, sliderMin, sliderMax);
-
-          let yCol;
-          if (this.sliderMode === 'a') {
-            yCol = new OkLab(box.chosen.y, t, box.chosen.x);
-          } else if (this.sliderMode === 'b') {
-            yCol = new OkLab(box.chosen.y, box.chosen.x, t);
-          } else {
-            yCol = new OkLab(t, box.chosen.x, box.chosen.y);
-          }
-          yCol = OkLab.OkLabtosRGB(yCol);
-
-          const index = GetIndex(x, y);
-
-          // if (yCol.isOutsideRGB) {
-          //   pixels[index + 3] = 28;
-          // } else {
-          //   pixels[index + 3] = 255;
-          // }
-          yCol.clamp();
-
-          pixels[index + 0] = yCol.red * 255;
-          pixels[index + 1] = yCol.green * 255;
-          pixels[index + 2] = yCol.blue * 255;
+        let t = 0;
+        if (this.sliderMode === 'a') {
+          t = chosenColour.a;
+        } else if (this.sliderMode === 'b') {
+          t = chosenColour.b;
+        } else {
+          t = chosenColour.l;
         }
+        t = map(yT, 0, 1, sliderMin, sliderMax);
+
+        let yCol;
+        if (this.sliderMode === 'a') {
+          yCol = new OkLab(box.chosen.y, t, box.chosen.x);
+        } else if (this.sliderMode === 'b') {
+          yCol = new OkLab(box.chosen.y, box.chosen.x, t);
+        } else {
+          yCol = new OkLab(t, box.chosen.x, box.chosen.y);
+        }
+
+        const index = GetIndex(x, y);
+
+        let srgb = OkLab.OkLabtosRGB(yCol);
+        srgb.clamp();
+        pixels[index + 0] = srgb.red * 255;
+        pixels[index + 1] = srgb.green * 255;
+        pixels[index + 2] = srgb.blue * 255;
       }
     }
   })();
@@ -187,10 +178,24 @@ const ColourPicker = (function () {
       box.size.w = slider.size.h;
       box.size.h = slider.size.h;
 
-      chosenColour = new OkLab(0.5, 0, 0);
-      // chosenColour.l = 0.5;
-      chosenColour.rgbClamp();
-      console.log(chosenColour);
+      box.min = {
+        x: box.pos.x,
+        y: box.pos.y
+      };
+      box.max = {
+        x: box.min.x + box.size.w,
+        y: box.min.y + box.size.h
+      };
+
+      const black = new OkLab(0, 0, 0);
+
+      chosenColour = OkLab.sRGBtoOkLab(new sRGB(0.5, 0.5, 0.5));
+      chosenColour.l = 0.5;
+
+      let srgb = OkLab.OkLabtosRGB(chosenColour);
+
+      console.log('Starting Colour', chosenColour);
+      console.log('Starting Colour RGB', srgb);
 
       slider.sliderMode = 'l';
 
@@ -206,8 +211,6 @@ const ColourPicker = (function () {
       } else if (slider.sliderMode === 'b') {
         sliderMin = -0.32;
         sliderMax = 0.2;
-
-        chosenColour.b = map(y, height - (referenceSize + 20), 10, sliderMin, sliderMax);
 
         slider.chosen = chosenColour.b;
         slider.chosenPos = map(chosenColour.b, sliderMin, sliderMax, height - (referenceSize + 20), 10);
@@ -246,9 +249,13 @@ const ColourPicker = (function () {
       }
 
       loadPixels();
-      for (let x = 10; x < width - 10; x++) {
-        for (let y = 0; y < height - 10; y++) {
+      for (let x = 10; x < referenceSize + 10; x++) {
+        for (let y = 10; y < height - referenceSize - 20; y++) {
           slider.draw(x, y);
+        }
+      }
+      for (let x = box.min.x; x < box.max.x; x++) {
+        for (let y = box.min.y; y < box.max.y; y++) {
           box.draw(x, y);
         }
       }
