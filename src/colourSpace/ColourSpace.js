@@ -1,6 +1,3 @@
-function lerp(a, b, t) {
-  return ((b - a) * t) + a;
-}
 
 class sRGB {
   constructor(r = 0, g = 0, b = 0) {
@@ -71,16 +68,7 @@ class OkLab {
   }
 
   static lerp(a, b, t) {
-    return new OkLab(lerp(a.l, b.l, t), lerp(a.a, b.a, t), lerp(a.b, b.b, t))
-  }
-
-  dynamicLightness(l) {
-    if (this.l > l) {
-      this.a = lerp()
-    } else {
-
-    }
-    this.l = l;
+    return new OkLab(MathsCustom.Lerp(a.l, b.l, t), MathsCustom.Lerp(a.a, b.a, t), MathsCustom.Lerp(a.b, b.b, t))
   }
 
   scalar(s) {
@@ -103,126 +91,69 @@ class OkLab {
     this.b = lab.b;
   }
 
-  static #LinearRGBtoXYZ = new Matrix([
-    0.4124564, 0.3575761, 0.1804375,
-    0.2126729, 0.7151522, 0.0721750,
-    0.0193339, 0.1191920, 0.9503041
-  ], 3, 3);
-  static #XYZtoLinearRGB = OkLab.#LinearRGBtoXYZ.copy();
-
-  static #XYZtoLinearLMS = new Matrix([
-    0.8189330101, 0.3618667424, -0.1288597137,
-    0.0329845436, 0.9293118715, 0.0361456387,
-    0.0482003018, 0.2643662691, 0.6338517070
-  ], 3, 3);
-  static #LinearLMStoXYZ = OkLab.#XYZtoLinearLMS.copy();
-
-  static #LMStoLab = new Matrix([
-    0.2104542553, 0.7936177850, -0.0040720468,
-    1.9779984951, -2.4285922050, 0.4505937099,
-    0.0259040371, 0.7827717662, -0.8086757660
-  ], 3, 3);
-  static #LabtoLMS = OkLab.#LMStoLab.copy();
-
-  static #LinearRGBtoLinearLMS = OkLab.#XYZtoLinearLMS.copy();
-  static #LinearLMStoLinearRGB = OkLab.#LinearRGBtoLinearLMS.copy();
-
   static initialise() {
-    // XYZtoLinearLMS * (LinearRGBtoXYZ * lrgb)
-    OkLab.#LinearRGBtoLinearLMS.mult(OkLab.#LinearRGBtoXYZ);
-
-    OkLab.#XYZtoLinearRGB.invert3x3();
-    OkLab.#LinearLMStoXYZ.invert3x3();
-    OkLab.#LabtoLMS.invert3x3();
-
-    console.log('XYZtoLinearRGB', OkLab.#XYZtoLinearRGB);
-    console.log('LinearLMStoXYZ', OkLab.#LinearLMStoXYZ);
-    console.log('LabtoLMS', OkLab.#LabtoLMS);
-
-    OkLab.#LinearLMStoLinearRGB = OkLab.#LinearRGBtoLinearLMS.copy();
-    OkLab.#LinearLMStoLinearRGB.invert3x3();
+    // do nothing
   }
 
   static sRGBtoOkLab(srgb) {
-    let val = new Matrix([srgb.red, srgb.green, srgb.blue], 1, 3);
+    // let val = new Matrix([srgb.red, srgb.green, srgb.blue], 1, 3);
+
+    // return new OkLab(val.mat[0], val.mat[1], val.mat[2]);
+    let l1 = srgb.red;
+    let a1 = srgb.green;
+    let b1 = srgb.blue;
 
     // to Linear RGB
-    for (let i = 0; i < 3; i++) {
-      if (val.mat[i] <= 0.04045) {
-        val.mat[i] /= 12.92;
-      } else {
-        val.mat[i] = Math.pow((val.mat[i] + 0.055) / 1.055, 2.4);
-      }
-    }
-    // val.pow(2.2);
-
-    // to CIE XYZ
-    let temp = val.copy();
-    val = this.#LinearRGBtoXYZ.copy();
-    val.mult(temp);
+    l1 = Math.pow(l1, 2.224874);
+    a1 = Math.pow(a1, 2.224874);
+    b1 = Math.pow(b1, 2.224874);
 
     // to Linear LMS
-    temp = val.copy();
-    val = this.#XYZtoLinearLMS.copy();
-    val.mult(temp);
-
-    // to Linear LMS
-    // let temp = val.copy();
-    // val = this.#LinearRGBtoLinearLMS.copy();
-    // val.mult(temp);
+    let l2 = 0.412242 * l1 + 0.536262 * a1 + 0.051428 * b1;
+    let a2 = 0.211943 * l1 + 0.680702 * a1 + 0.107374 * b1;
+    let b2 = 0.088359 * l1 + 0.281847 * a1 + 0.630130 * b1;
 
     // to LMS
-    val.cbrt();
+    l1 = Math.cbrt(l2);
+    a1 = Math.cbrt(a2);
+    b1 = Math.cbrt(b2);
 
     // to OkLab
-    temp = val.copy();
-    val = this.#LMStoLab.copy();
-    val.mult(temp);
+    l2 = 0.210454 * l1 + 0.793618 * a1 - 0.004072 * b1;
+    a2 = 1.977998 * l1 - 2.428592 * a1 + 0.450594 * b1;
+    b2 = 0.025904 * l1 + 0.782772 * a1 - 0.808676 * b1;
 
-    return new OkLab(val.mat[0], val.mat[1], val.mat[2]);
+    return new OkLab(l2, a2, b2);
   }
 
   static OkLabtosRGB(lab) {
-    let val = new Matrix([lab.l, lab.a, lab.b], 1, 3);
+    // let val = new Matrix([lab.l, lab.a, lab.b], 1, 3);
+
+    //return new sRGB(val.mat[0], val.mat[1], val.mat[2]);
+    let r1 = lab.l;
+    let g1 = lab.a;
+    let b1 = lab.b;
 
     // to LMS
-    let temp = val.copy();
-    val = this.#LabtoLMS.copy();
-    val.mult(temp);
+    let r2 = r1 + 0.396338 * g1 + 0.215804 * b1;
+    let g2 = r1 - 0.105561 * g1 - 0.063854 * b1;
+    let b2 = r1 - 0.089484 * g1 - 1.291486 * b1;
 
     // to Linear LMS
-    val.pow(3);
-
-    // to CIE XYZ
-    temp = val.copy();
-    val = this.#LinearLMStoXYZ.copy();
-    val.mult(temp);
+    r1 = r2 * r2 * r2;
+    g1 = g2 * g2 * g2;
+    b1 = b2 * b2 * b2;
 
     // to Linear RGB
-    temp = val.copy();
-    val = this.#XYZtoLinearRGB.copy();
-    val.mult(temp);
-
-    // to Linear RGB
-    // temp = val.copy();
-    // val = this.#LinearLMStoLinearRGB.copy();
-    // val.mult(temp);
+    r2 = 4.076539 * r1 - 3.307097 * g1 + 0.230822 * b1;
+    g2 = -1.268606 * r1 + 2.609748 * g1 - 0.341164 * b1;
+    b2 = -0.004198 * r1 - 0.703568 * g1 + 1.707206 * b1;
 
     // to sRGB
-    const exp = 1. / 2.4;
-    for (let i = 0; i < 3; i++) {
-      if (val.mat[i] <= 0.0031308) {
-        val.mat[i] *= 12.92;
-      } else {
-        let absroot = Math.pow(Math.abs(val.mat[i]), exp);
-        if (val.mat[i] < 0.) absroot *= -1;
-        val.mat[i] = absroot;
+    r2 = MathsCustom.NRoot(r2, 2.224874);
+    g2 = MathsCustom.NRoot(g2, 2.224874);
+    b2 = MathsCustom.NRoot(b2, 2.224874);
 
-        val.mat[i] = (1.055 * val.mat[i]) - 0.055;
-      }
-    }
-    // val.nroot(2.2);
-
-    return new sRGB(val.mat[0], val.mat[1], val.mat[2]);
+    return new sRGB(r2, g2, b2);
   }
 }

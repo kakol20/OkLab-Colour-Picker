@@ -13,12 +13,12 @@ const ColourPicker = (function () {
   const referenceSize = 40;
 
   const aValue = {
-    min: -0.4,
-    max: 0.4
+    min: -0.24,
+    max: 0.28
   };
   const bValue = {
-    min: -0.4,
-    max: 0.4
+    min: -0.32,
+    max: 0.2
   };
 
   const box = (function () {
