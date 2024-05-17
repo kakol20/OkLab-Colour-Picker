@@ -24,7 +24,7 @@ const ProcessManager = (function () {
 
   let state = 'nothing';
 
-  const maxFPS = 60;
+  const maxFPS = 24;
 
   const debugStates = true;
 
@@ -73,6 +73,8 @@ const ProcessManager = (function () {
       temp.rgbClamp();
 
       checkerCol2 = temp.copy();
+
+      frameRate(maxFPS)
 
       // console.log(OkLab.OkLabtosRGB(temp));
       // console.log('First Background Col', checkerCol1);

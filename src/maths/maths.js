@@ -19,6 +19,8 @@ const MathsCustom = (function () {
 
     Lerp(a, b, t) {
       return ((b - a) * t) + a;
-    }
+    },
+
+    TAU: Math.PI * 2,
   }
 })();
