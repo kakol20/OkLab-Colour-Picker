@@ -1,4 +1,3 @@
-
 class sRGB {
   constructor(r = 0, g = 0, b = 0) {
     this.red = r;
@@ -82,10 +81,18 @@ class OkLab {
   }
 
   rgbClamp() {
-    let rgb = OkLab.OkLabtosRGB(this.copy());
-    rgb.clamp();
-    // console.log(rgb);
-    let lab = OkLab.sRGBtoOkLab(rgb);
+    // let rgb = OkLab.OkLabtosRGB(this.copy());
+    // rgb.clamp();
+    // // console.log(rgb);
+    // let lab = OkLab.sRGBtoOkLab(rgb);
+    // this.l = lab.l;
+    // this.a = lab.a;
+    // this.b = lab.b;
+
+    let lch = OkLCh.OkLabtoOkLCh(this.copy());
+    lch.fallback(0.005, 1000);
+
+    let lab = OkLCh.OkLChtoOkLab(lch);
     this.l = lab.l;
     this.a = lab.a;
     this.b = lab.b;
@@ -155,5 +162,82 @@ class OkLab {
     b2 = MathsCustom.NRoot(b2, 2.224874);
 
     return new sRGB(r2, g2, b2);
+  }
+}
+
+class OkLCh {
+  constructor(l = 0, c = 0, h = 0) {
+    this.l = l;
+    this.c = c;
+    this.h = h;
+  }
+
+  get p5Color() {
+    let out = OkLCh.OkLChtosRGB(this.copy());
+    return out.p5Color;
+  }
+
+  copy() {
+    return new OkLCh(this.l, this.c, this.h);
+  }
+
+  fallback(change = 0.001, maxIt = 100) {
+    this.l = Math.min(Math.max(this.l, 0), 1);
+    let current = OkLCh.OkLChtosRGB(this.copy());
+
+    let iterations = 0;
+    while (current.isOutsideRGB) {
+      // this.c = this.c > 0.37 ? 0.37 : this.c;
+
+      this.c -= change;
+      this.c = Math.max(this.c, 0);
+
+      current = OkLCh.OkLChtosRGB(this.copy());
+
+      iterations++;
+
+      if (iterations > maxIt) {
+        current.clamp();
+        let lch = OkLCh.sRGBtoOKLCh(current);
+        this.l = lch.l;
+        this.c = lch.c;
+        this.h = lch.h;
+
+        break;
+      }
+    }
+  }
+
+  static OkLabtoOkLCh(lab) {
+    let l = lab.l;
+    let c = Math.sqrt(lab.a * lab.a + lab.b * lab.b);
+    let h = MathsCustom.UnsignedMod(Math.atan2(lab.b, lab.a), MathsCustom.TAU);
+
+    return new OkLCh(l, c, h);
+  }
+
+  static OkLChtoOkLab(lch) {
+    let l = lch.l;
+    let a = lch.c * Math.cos(lch.h);
+    let b = lch.c * Math.sin(lch.h);
+    return new OkLab(l, a, b);
+  }
+
+  static sRGBtoOKLCh(srgb) {
+    let lab = OkLab.sRGBtoOkLab(srgb);
+
+    let l = lab.l;
+    let c = Math.sqrt(lab.a * lab.a + lab.b * lab.b);
+    let h = MathsCustom.UnsignedMod(Math.atan2(lab.b, lab.a), MathsCustom.TAU);
+
+    return new OkLCh(l, c, h);
+  }
+
+  static OkLChtosRGB(lch) {
+    let l = lch.l;
+    let a = lch.c * Math.cos(lch.h);
+    let b = lch.c * Math.sin(lch.h);
+
+    return OkLab.OkLabtosRGB(new OkLab(l, a, b));
   }
 }

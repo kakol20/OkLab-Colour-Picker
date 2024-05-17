@@ -104,6 +104,8 @@ const ColourPicker = (function () {
 
         let alpha = fg.isOutsideRGB ? 0.5 : 1;
 
+        fg.rgbClamp();
+
         // let srgb = OkLab.OkLabtosRGB(OkLab.alphaOver(fg, bg, alpha));
         let srgb = OkLab.OkLabtosRGB(OkLab.lerp(bg, fg, alpha));
         srgb.clamp();
@@ -164,6 +166,8 @@ const ColourPicker = (function () {
         }
 
         const index = GetIndex(x, y);
+
+        yCol.rgbClamp();
 
         let srgb = OkLab.OkLabtosRGB(yCol);
         srgb.clamp();
