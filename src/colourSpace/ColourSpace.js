@@ -191,6 +191,7 @@ class OkLCh {
 
       this.c -= change;
       this.c = Math.max(this.c, 0);
+      if (this.c === 0) break;
 
       current = OkLCh.OkLChtosRGB(this.copy());
 

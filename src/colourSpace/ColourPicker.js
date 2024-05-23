@@ -13,12 +13,12 @@ const ColourPicker = (function () {
   const referenceSize = 40;
 
   const aValue = {
-    min: -0.24,
+    min: -0.28,
     max: 0.28
   };
   const bValue = {
     min: -0.32,
-    max: 0.2
+    max: 0.32
   };
 
   const box = (function () {
@@ -204,7 +204,7 @@ const ColourPicker = (function () {
 
       const black = new OkLab(0, 0, 0);
 
-      chosenColour = OkLab.sRGBtoOkLab(new sRGB(0.5, 0.5, 0.5));
+      chosenColour = OkLab.sRGBtoOkLab(new sRGB(1, 0, 0));
       // chosenColour = new OkLab(0.5, 0, 0);
       // chosenColour.l = 0.5;
       chosenColour.rgbClamp();
