@@ -64,7 +64,7 @@ const ProcessManager = (function () {
       // ----- MAIN -----
 
       noLoop();
-      OkLab.initialise();
+      // OkLab.initialise();
       ColourPicker.setup();
 
       checkerCol1 = OkLab.sRGBtoOkLab(bgColsRGB.copy());

@@ -102,16 +102,16 @@ const ColourPicker = (function () {
         let fg = new OkLab(l, a, b);
         let bg = OkLab.sRGBtoOkLab(new sRGB(pixels[index + 0] / 255, pixels[index + 1] / 255, pixels[index + 2] / 255));
 
-        let alpha = fg.isOutsideRGB ? 0.5 : 1;
+        const alpha = !fg.isInside ? 0.5 : 1;
 
         fg.rgbClamp();
 
         // let srgb = OkLab.OkLabtosRGB(OkLab.alphaOver(fg, bg, alpha));
         let srgb = OkLab.OkLabtosRGB(OkLab.lerp(bg, fg, alpha));
         srgb.clamp();
-        pixels[index + 0] = srgb.red * 255;
-        pixels[index + 1] = srgb.green * 255;
-        pixels[index + 2] = srgb.blue * 255;
+        pixels[index + 0] = srgb.r * 255;
+        pixels[index + 1] = srgb.g * 255;
+        pixels[index + 2] = srgb.b * 255;
       }
     }
   })();
@@ -171,9 +171,9 @@ const ColourPicker = (function () {
 
         let srgb = OkLab.OkLabtosRGB(yCol);
         srgb.clamp();
-        pixels[index + 0] = srgb.red * 255;
-        pixels[index + 1] = srgb.green * 255;
-        pixels[index + 2] = srgb.blue * 255;
+        pixels[index + 0] = srgb.r * 255;
+        pixels[index + 1] = srgb.g * 255;
+        pixels[index + 2] = srgb.b * 255;
       }
     }
   })();
@@ -181,7 +181,7 @@ const ColourPicker = (function () {
   return {
     consoleLog() {
       console.log('chosenColour', chosenColour);
-      console.log('chosenColour.isOutsideRGB', chosenColour.isOutsideRGB);
+      console.log('chosenColour.isInside', chosenColour.isInside);
     },
     setup() {
       loop();
@@ -204,7 +204,7 @@ const ColourPicker = (function () {
 
       const black = new OkLab(0, 0, 0);
 
-      chosenColour = OkLab.sRGBtoOkLab(new sRGB(1, 0, 0));
+      chosenColour = OkLab.sRGBtoOkLab(new sRGB(255 / 255, 24 / 255, 138 / 255));
       // chosenColour = new OkLab(0.5, 0, 0);
       // chosenColour.l = 0.5;
       chosenColour.rgbClamp();
