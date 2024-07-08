@@ -1,5 +1,5 @@
 const ColourPicker = (function () {
-  function GetIndex(x, y, d = 1, i = 0, j = 1) {
+  function GetIndex(x, y, d = 1, i = 0, j = 0) {
     return Math.floor(4 * ((y * d + j) * width * d + (x * d + i)));
   };
 
