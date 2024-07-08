@@ -53,13 +53,8 @@ const ColourPicker = (function () {
       },
 
       drawOther() {
-        // draw outline
-        rectMode(CORNER);
-        noFill();
-        stroke(outlineCol.p5Color);
-        rect(this.pos.x, this.pos.y, this.size.w, this.size.h);
+        strokeWeight(1);
 
-        // draw picker
         const min = {
           x: this.pos.x,
           y: this.pos.y
@@ -68,6 +63,32 @@ const ColourPicker = (function () {
           x: min.x + this.size.w,
           y: min.y + this.size.h,
         }
+
+        // draw outline
+        rectMode(CORNER);
+        noFill();
+        stroke(outlineCol.p5Color);
+        rect(this.pos.x, this.pos.y, this.size.w, this.size.h);
+
+        // draw mid line
+        noFill();
+        stroke(outlineCol.p5Color);
+
+        let midX, midY;
+        if (slider.sliderMode === 'a') {
+          midX = map(0, aValue.min, aValue.max, min.x, max.x);
+          midY = map(0.5, 0, 1, max.y, min.y);
+        } else if (slider.sliderMode === 'b') {
+          midX = map(0, bValue.min, bValue.max, min.x, max.x);
+          midY = map(0.5, 0, 1, max.y, min.y);
+        } else {
+          midX = map(0, aValue.min, aValue.max, min.x, max.x);
+          midY = map(0, bValue.min, bValue.max, max.y, min.y);
+        }
+        line(midX, min.y, midX, max.y);
+        line(min.x, midY, max.x, midY);
+
+        // draw picker
 
         let x, y;
         if (slider.sliderMode === 'a') {
@@ -149,6 +170,21 @@ const ColourPicker = (function () {
         noFill();
         stroke(outlineCol.p5Color);
         rect(this.pos.x, this.pos.y, this.size.w, this.size.h);
+
+        // draw mid line
+        noFill();
+        stroke(outlineCol.p5Color);
+
+        let midY = 0;
+        if (this.sliderMode === 'a') {
+          midY = map(0, aValue.min, aValue.max, height - referenceSize - 20, 10);
+        } else if (this.sliderMode === 'b') {
+          midY = map(0, bValue.min, bValue.max, height - referenceSize - 20, 10);
+        } else {
+          midY = map(0.5, 0, 1, height - referenceSize - 20, 10);
+        }
+
+        line(10, midY, referenceSize + 10, midY);
 
         // draw picker
         ellipseMode(CENTER);
