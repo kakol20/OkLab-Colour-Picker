@@ -107,6 +107,7 @@ const ColourPicker = (function () {
         fg.rgbClamp();
 
         // let srgb = OkLab.OkLabtosRGB(OkLab.alphaOver(fg, bg, alpha));
+
         let srgb = OkLab.OkLabtosRGB(OkLab.lerp(bg, fg, alpha));
         srgb.clamp();
         pixels[index + 0] = srgb.r * 255;
@@ -167,7 +168,7 @@ const ColourPicker = (function () {
 
         const index = GetIndex(x, y);
 
-        yCol.rgbClamp();
+        yCol.fallback();
 
         let srgb = OkLab.OkLabtosRGB(yCol);
         srgb.clamp();
@@ -207,7 +208,7 @@ const ColourPicker = (function () {
       chosenColour = OkLab.sRGBtoOkLab(new sRGB(255 / 255, 24 / 255, 138 / 255));
       // chosenColour = new OkLab(0.5, 0, 0);
       // chosenColour.l = 0.5;
-      chosenColour.rgbClamp();
+      chosenColour.fallback();
 
       let srgb = OkLab.OkLabtosRGB(chosenColour);
 
@@ -315,7 +316,7 @@ const ColourPicker = (function () {
           chosenColour.l = map(y, height - (referenceSize + 20), 10, sliderMin, sliderMax);
         }
 
-        chosenColour.rgbClamp();
+        if (!chosenColour.isInside) chosenColour.fallback();
       }
       else if (x >= (referenceSize + 20) && x <= width - 10 && y >= 10 && y <= height - (referenceSize + 20)) {
         touching = true;
@@ -335,7 +336,7 @@ const ColourPicker = (function () {
           chosenColour.b = map(y, height - (referenceSize + 20), 10, bValue.min, bValue.max);
         }
 
-        chosenColour.rgbClamp();
+        if (!chosenColour.isInside) chosenColour.fallback();
       }
     },
     touchMoved() {
@@ -352,7 +353,7 @@ const ColourPicker = (function () {
             chosenColour.l = map(y, height - (referenceSize + 20), 10, sliderMin, sliderMax);
           }
 
-          chosenColour.rgbClamp();
+          if (!chosenColour.isInside) chosenColour.fallback();
         } else if (touched === 'box') {
           x = Math.max(Math.min(x, width - 10), 10);
           y = Math.max(Math.min(y, height - (referenceSize + 20)), 10);
@@ -368,7 +369,7 @@ const ColourPicker = (function () {
             chosenColour.b = map(y, height - (referenceSize + 20), 10, bValue.min, bValue.max);
           }
 
-          chosenColour.rgbClamp();
+          if (!chosenColour.isInside) chosenColour.fallback();
         }
       }
 

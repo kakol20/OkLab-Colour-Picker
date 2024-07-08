@@ -102,9 +102,9 @@ class OkLab {
     return new OkLab(this.l, this.a, this.b);
   }
 
-  rgbClamp() {
+  fallback(maxIter = 10) {
     let lch = OkLCh.LabToLCh(this);
-    lch.fallback(5);
+    lch.fallback(maxIter);
 
     const lab = OkLCh.LChToLab(lch);
     this.l = lab.l;

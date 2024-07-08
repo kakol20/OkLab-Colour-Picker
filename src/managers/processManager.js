@@ -70,7 +70,7 @@ const ProcessManager = (function () {
       checkerCol1 = OkLab.sRGBtoOkLab(bgColsRGB.copy());
       let temp = checkerCol1.copy();
       temp.scalar(1 / 2);
-      temp.rgbClamp();
+      temp.fallback();
 
       checkerCol2 = temp.copy();
 
