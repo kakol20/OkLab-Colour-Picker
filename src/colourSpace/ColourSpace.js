@@ -187,8 +187,8 @@ class OkLab {
 
   static OkLabtosRGB(lab) {
     // to reduce floating point error
-    if (lab.l == 1) return new sRGB(1, 1, 1);
-    if (lab.l == 0) return new sRGB(0, 0, 0);
+    if (lab.l === 1) return new sRGB(1, 1, 1);
+    if (lab.l === 0) return new sRGB(0, 0, 0);
 
     if (lab.a === 0 && lab.b === 0) {
       // if graycale - can skip some conversions
