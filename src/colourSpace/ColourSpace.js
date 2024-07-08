@@ -104,7 +104,7 @@ class OkLab {
 
   rgbClamp() {
     let lch = OkLCh.LabToLCh(this);
-    lch.fallback(10);
+    lch.fallback(5);
 
     const lab = OkLCh.LChToLab(lch);
     this.l = lab.l;
@@ -120,6 +120,11 @@ class OkLab {
   get p5Color() {
     let out = OkLab.OkLabtosRGB(this);
     return out.p5Color;
+  }
+
+  get isInside() {
+    const rgb = OkLab.OkLabtosRGB(this);
+    return rgb.isInside;
   }
 
   static mix(lab1, lab2, t) {
