@@ -203,12 +203,6 @@ const ColourPicker = (function () {
       },
 
       draw() {
-        // for (let y = 10; y < height - referenceSize - 20; y++) {
-
-        //   for (let x = 10; x < referenceSize + 10; x++) {
-
-        //   }
-        // }
         const d = pixelDensity();
         for (let y = 10; y < height - referenceSize - 20; y++) {
           for (let j = 0; j < d; j++) {
