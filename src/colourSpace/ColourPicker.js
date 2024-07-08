@@ -1,6 +1,6 @@
 const ColourPicker = (function () {
-  function GetIndex(x, y) {
-    return Math.floor((x + y * width) * 4);
+  function GetIndex(x, y, d = 1, i = 0, j = 0) {
+    return Math.floor(4 * ((y * d + j) * width * d + (x * d + i)));
   };
 
   let chosenColour;
@@ -108,46 +108,55 @@ const ColourPicker = (function () {
       },
 
       draw() {
+        const d = pixelDensity();
+
         for (let x = box.min.x; x < box.max.x; x++) {
-          for (let y = box.min.y; y < box.max.y; y++) {
-            // draw colours
-            const index = GetIndex(x, y);
-            let l, a, b;
+          for (let i = 0; i < d; i++) {
+            const xi = x + (i / d);
 
-            if (slider.sliderMode === 'a') {
-              a = slider.chosen;
+            for (let y = box.min.y; y < box.max.y; y++) {
+              for (let j = 0; j < d; j++) {
+                const yj = y + (j / d);
 
-              b = map(x, this.min.x, this.max.x, bValue.min, bValue.max);
-              l = map(y, this.max.y, this.min.y, 0, 1);
-            } else if (slider.sliderMode === 'b') {
-              b = slider.chosen;
+                // draw colours
+                const index = GetIndex(x, y, d, i, j);
+                let l, a, b;
 
-              a = map(x, this.min.x, this.max.x, aValue.min, aValue.max);
-              l = map(y, this.max.y, this.min.y, 0, 1);
-            } else {
-              l = slider.chosen;
+                if (slider.sliderMode === 'a') {
+                  a = slider.chosen;
 
-              a = map(x, this.min.x, this.max.x, aValue.min, aValue.max);
-              b = map(y, this.max.y, this.min.y, bValue.min, bValue.max);
+                  b = map(xi, this.min.x, this.max.x, bValue.min, bValue.max);
+                  l = map(yj, this.max.y, this.min.y, 0, 1);
+                } else if (slider.sliderMode === 'b') {
+                  b = slider.chosen;
+
+                  a = map(xi, this.min.x, this.max.x, aValue.min, aValue.max);
+                  l = map(yj, this.max.y, this.min.y, 0, 1);
+                } else {
+                  l = slider.chosen;
+
+                  a = map(xi, this.min.x, this.max.x, aValue.min, aValue.max);
+                  b = map(yj, this.max.y, this.min.y, bValue.min, bValue.max);
+                }
+
+                let fg = new OkLab(l, a, b);
+                let bg = OkLab.sRGBtoOkLab(new sRGB(pixels[index + 0] / 255, pixels[index + 1] / 255, pixels[index + 2] / 255));
+
+                const alpha = !fg.isInside ? 0.5 : 1;
+
+                // fg.fallback();
+
+                // let srgb = OkLab.OkLabtosRGB(OkLab.alphaOver(fg, bg, alpha));
+
+                let srgb = OkLab.OkLabtosRGB(OkLab.lerp(bg, fg, alpha));
+                srgb.clamp();
+                pixels[index + 0] = srgb.r * 255;
+                pixels[index + 1] = srgb.g * 255;
+                pixels[index + 2] = srgb.b * 255;
+              }
             }
-
-            let fg = new OkLab(l, a, b);
-            let bg = OkLab.sRGBtoOkLab(new sRGB(pixels[index + 0] / 255, pixels[index + 1] / 255, pixels[index + 2] / 255));
-
-            const alpha = !fg.isInside ? 0.5 : 1;
-
-            // fg.fallback();
-
-            // let srgb = OkLab.OkLabtosRGB(OkLab.alphaOver(fg, bg, alpha));
-
-            let srgb = OkLab.OkLabtosRGB(OkLab.lerp(bg, fg, alpha));
-            srgb.clamp();
-            pixels[index + 0] = srgb.r * 255;
-            pixels[index + 1] = srgb.g * 255;
-            pixels[index + 2] = srgb.b * 255;
           }
         }
-
       }
     }
   })();
@@ -194,44 +203,53 @@ const ColourPicker = (function () {
       },
 
       draw() {
+        const d = pixelDensity();
         for (let y = 10; y < height - referenceSize - 20; y++) {
-          // draw slider
-          let yT = map(y, height - referenceSize - 20, 10, 0, 1);
+          for (let j = 0; j < d; j++) {
+            const yj = y + (j / d);
 
-          let t = 0;
-          if (this.sliderMode === 'a') {
-            t = chosenColour.a;
-          } else if (this.sliderMode === 'b') {
-            t = chosenColour.b;
-          } else {
-            t = chosenColour.l;
-          }
-          t = map(yT, 0, 1, sliderMin, sliderMax);
+            // draw slider
+            let yT = map(yj, height - referenceSize - 20, 10, 0, 1);
 
-          let yCol;
-          if (this.sliderMode === 'a') {
-            yCol = new OkLab(box.chosen.y, t, box.chosen.x);
-          } else if (this.sliderMode === 'b') {
-            yCol = new OkLab(box.chosen.y, box.chosen.x, t);
-          } else {
-            yCol = new OkLab(t, box.chosen.x, box.chosen.y);
-          }
+            let t = 0;
+            if (this.sliderMode === 'a') {
+              t = chosenColour.a;
+            } else if (this.sliderMode === 'b') {
+              t = chosenColour.b;
+            } else {
+              t = chosenColour.l;
+            }
+            t = map(yT, 0, 1, sliderMin, sliderMax);
 
-          const alpha = !yCol.isInside ? 0.5 : 1;
-          
-          if (!yCol.isInside) yCol.fallback();
+            let yCol;
+            if (this.sliderMode === 'a') {
+              yCol = new OkLab(box.chosen.y, t, box.chosen.x);
+            } else if (this.sliderMode === 'b') {
+              yCol = new OkLab(box.chosen.y, box.chosen.x, t);
+            } else {
+              yCol = new OkLab(t, box.chosen.x, box.chosen.y);
+            }
 
-          for (let x = 10; x < referenceSize + 10; x++) {
-            const index = GetIndex(x, y);
+            const alpha = !yCol.isInside ? 0.5 : 1;
 
-            const bg = OkLab.sRGBtoOkLab(new sRGB(pixels[index + 0] / 255, pixels[index + 1] / 255, pixels[index + 2] / 255));
+            if (!yCol.isInside) yCol.fallback();
 
-            let srgb = OkLab.OkLabtosRGB(OkLab.lerp(bg, yCol, alpha));
-            srgb.clamp();
+            for (let x = 10; x < referenceSize + 10; x++) {
+              for (let i = 0; i < d; i++) {
+                // const xi = x + (i / d);
 
-            pixels[index + 0] = srgb.r * 255;
-            pixels[index + 1] = srgb.g * 255;
-            pixels[index + 2] = srgb.b * 255;
+                const index = GetIndex(x, y, d, i, j);
+
+                const bg = OkLab.sRGBtoOkLab(new sRGB(pixels[index + 0] / 255, pixels[index + 1] / 255, pixels[index + 2] / 255));
+
+                let srgb = OkLab.OkLabtosRGB(OkLab.lerp(bg, yCol, alpha));
+                srgb.clamp();
+
+                pixels[index + 0] = srgb.r * 255;
+                pixels[index + 1] = srgb.g * 255;
+                pixels[index + 2] = srgb.b * 255;
+              }
+            }
           }
         }
       }
