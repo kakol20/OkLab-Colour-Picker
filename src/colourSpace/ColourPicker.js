@@ -264,7 +264,7 @@ const ColourPicker = (function () {
 
       const black = new OkLab(0, 0, 0);
 
-      chosenColour = OkLab.sRGBtoOkLab(new sRGB(255 / 255, 24 / 255, 138 / 255));
+      chosenColour = OkLab.sRGBtoOkLab(new sRGB(181 / 255, 1 / 255, 94 / 255));
       // chosenColour = new OkLab(0.5, 0, 0);
       // chosenColour.l = 0.5;
       chosenColour.fallback();
