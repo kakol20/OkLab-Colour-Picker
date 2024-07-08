@@ -104,7 +104,7 @@ const ColourPicker = (function () {
 
         const alpha = !fg.isInside ? 0.5 : 1;
 
-        fg.rgbClamp();
+        // fg.fallback();
 
         // let srgb = OkLab.OkLabtosRGB(OkLab.alphaOver(fg, bg, alpha));
 
