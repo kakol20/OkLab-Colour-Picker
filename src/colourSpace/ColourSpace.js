@@ -300,10 +300,12 @@ class OkLCh {
   fallback(maxIterations = 5) {
     let iter = 0;
     let ogL = this.l;
+    let ogH = this.h;
     while (iter < maxIterations) {
       this.rgbClamp();
 
       this.l = ogL;
+      this.h = ogH;
 
       iter++;
 
